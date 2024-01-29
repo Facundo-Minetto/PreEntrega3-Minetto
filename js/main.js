@@ -27,11 +27,11 @@ class Prenda {
 
 //arrays de prendas de ropa
 const listaPrendas = [
-    new Prenda(1, 'Remera', 'Nike', 'Remera Nike negra basica', '15000'),
-    new Prenda(2, 'Buzo', 'Undefined', 'Buzo undefined "TRAPSTAR"', '50000'),
-    new Prenda(3, 'Buzo', 'Nike', 'Buzo Nike ACG crema', '50000'),
-    new Prenda(4, 'Remera', 'Lacoste', 'Remera Lacoste blanca', '20000'),
-    new Prenda(5, 'Buzo', 'Nike', 'Buzo Nike Air Jordan', '50000')
+    new Prenda(1, 'Remera', 'Nike', 'Remera Nike negra basica', 15000),
+    new Prenda(2, 'Buzo', 'Undefined', 'Buzo undefined "TRAPSTAR"', 50000),
+    new Prenda(3, 'Buzo', 'Nike', 'Buzo Nike ACG crema', 50000),
+    new Prenda(4, 'Remera', 'Lacoste', 'Remera Lacoste blanca', 20000),
+    new Prenda(5, 'Buzo', 'Nike', 'Buzo Nike Air Jordan', 50000)
 ];
 
 
