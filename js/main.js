@@ -1,129 +1,137 @@
-const pagoRecargo = {
-    "efectivo":0,
-    "pagadios": 35,
-    "patacones": 9,
-    "lecops": 10,
-    "dolares": 25
-};
+const botonesCategorias = document.querySelectorAll(".boton-categoria");
+const tituloPrincipal = document.querySelector("#titulo-principal");
+const contenedorProductos = document.querySelector("#contenedor-productos");
+const numerito = document.querySelector("#numerito");
+const inputBuscar = document.querySelector("#buscar");
+let botonesAgregar = document.querySelectorAll(".producto-agregar");
+let productosEnCarrito;
+let productosEnCarritoLS = recuperar("productos-en-carrito");
 
-function calcularCuotas (precio, cuotas, metodo) {
-    const interesPorcentaje = pagoRecargo[metodo] || 0;
-    const interes = precio * (interesPorcentaje / 100);
-    const totalConInteres = precio + interes;
-    const valorCuota = totalConInteres / cuotas;
-    return valorCuota;
+//verificar si carrito existe en LS
+if (productosEnCarritoLS) {
+    productosEnCarrito = productosEnCarritoLS;
+    actualizarNumerito();
+} else {
+    productosEnCarrito = [];
 }
 
-//clase constructora
-class Prenda {
-    constructor(id, tipo, marca, descripcion, precio){
-        this.id = id;
-        this.tipo = tipo;
-        this.marca = marca;
-        this.descripcion = descripcion;
-        this.precio = precio;
-    }
-}
+//cargamos el array de objeto en el local storage
+almacenar("PRODUCTOS", productos);
+//usamos la funcion cargarProductos y pasamos el objeto recuperado de LS
+cargarProductos(recuperar("PRODUCTOS"));
 
-//arrays de prendas de ropa
-const listaPrendas = [
-    new Prenda(1, 'Remera', 'Nike', 'Remera Nike negra basica', 15000),
-    new Prenda(2, 'Buzo', 'Undefined', 'Buzo undefined "TRAPSTAR"', 50000),
-    new Prenda(3, 'Buzo', 'Nike', 'Buzo Nike ACG crema', 50000),
-    new Prenda(4, 'Remera', 'Lacoste', 'Remera Lacoste blanca', 20000),
-    new Prenda(5, 'Buzo', 'Nike', 'Buzo Nike Air Jordan', 50000)
-];
-
-
-function mostrarPrendaPorId(id){
-    const Prenda = listaPrendas.find(prod => prod.id === id);
-
-    if(Prenda){
-        const infoProducto = `
-        ID: ${Prenda.id}
-        Tipo: ${Prenda.tipo}
-        Marca: ${Prenda.marca}
-        Descripcion: ${Prenda.descripcion}
-
-        Precio: $${Prenda.precio.toLocaleString('es-AR')} ARS` // //buscado en internet
-        alert(`Esta es la prenda que selecciono:\n${infoProducto}`);
-    }
-    else{
-        alert(`No se encontro ninguna prenda con ese ID: ${id}`);
-    }
-}
-
-function seleccionarMetodo(){
-    const promptMetodo = prompt(`Seleccione el metodo de pago:\n${Object.keys(pagoRecargo).join(", ")}`); //buscado en internet
-    const metodoPago = promptMetodo.toLowerCase();
-
-    if(pagoRecargo.hasOwnProperty(metodoPago)){
-        return metodoPago;
-    }
-    else{
-        alert("Ingrese un metodo de pago");
-        return seleccionarMetodo();
-    }
-}
-
-function seleccionarCuotas(){
-    let cuotas;
-    do{
-        cuotas = parseInt(prompt("Por favor, ingrese la cantidad de cuotas que desea abonar, 1, 3, 6 y 12 cuotas son las disponibles."));
-        if(cuotas != 1 && cuotas != 3 && cuotas != 6 && cuotas != 12){
-            alert("Solo puede pagar en 1 / 3 / 6 / 12 cuotas");
-        }
-    } while(isNaN(cuotas) || (cuotas != 1 && cuotas != 3 && cuotas != 6 && cuotas != 12));
-
-    return cuotas;
-}
-
-function mostrarPrendas(){
-    let booleano = true;
-    while(booleano){
-        alert("Buenas! pase a ver esta hermosa ropa:");
-        let lista = "Estas son nuestras ofertas del finde: \n \n";
+function cargarProductos(productosElegidos) {
+    contenedorProductos.innerHTML = "";
+    productosElegidos.forEach((producto) => {
+        const div = document.createElement("div");
+        div.classList.add("producto");
+        div.classList.add("col");
+        div.innerHTML = `
         
-        for (const Prenda of listaPrendas) {
-            lista += `${Prenda.id} - ${Prenda.descripcion} \n`
-        }
-        const idInicial = parseInt(prompt(lista + '\n En que prenda esta interesado? (presione su respectivo ID): \n "9" si quiere salir de este menu'));
-        const productoSeleccionado = listaPrendas.find(prod => prod.id === idInicial);
+            <img class="producto-imagen" src="${producto.imagen}" alt="${producto.nombre}">
+            <div class="producto-detalles">
+                <h3 class="producto-nombre">${producto.nombre}</h3>
+                <p class="producto-precio">$${producto.precio}</p>
+                <p class="producto-precio">cod. ${producto.id}</p>
+                <button class="producto-agregar" id="${producto.id}">Agregar</button>
+            </div>
+        `;
 
-        if(idInicial === 9){
-            alert("Gracias, vuelva pronto!")
-            return booleano = false
-        }
-        else if(productoSeleccionado){
-            mostrarPrendaPorId(idInicial);
-
-            const metodo = seleccionarMetodo();
-            const cuotas = seleccionarCuotas();
-
-            const valorCuota = calcularCuotas(productoSeleccionado.precio, cuotas, metodo);
-            alert(`Su cuota sera de: $${valorCuota.toLocaleString('es-AR')} ARS`);
-        }
-        else{
-            alert(`No hay nada con ese ID: ${idInicial}`);
-        }
-
-        booleano = volverInicio();
-
-        function volverInicio(){
-            const nose = prompt("Volver atras? (si o no)");
-
-            if(nose === "no"){
-                alert("Gracias por utilizar este sistema. Hasta luego");
-            }
-            else if(nose === "si"){
-                return mostrarPrendas();
-            }
-            else{
-                alert("Por favor ingresa si o no");
-                return volverInicio();
-            }
-        }
-    }
+        contenedorProductos.append(div);
+    });
+    actualizarBotonesAgregar();
 }
 
-mostrarPrendas();
+function actualizarBotonesAgregar() {
+    botonesAgregar = document.querySelectorAll(".producto-agregar");
+    botonesAgregar.forEach((boton) => {
+        boton.addEventListener("click", agregarAlCarrito);
+    });
+}
+
+function agregarAlCarrito(e) {
+    Toastify({
+        text: "Producto agregado",
+        duration: 3000,
+        close: true,
+        gravity: "top",
+        position: "right",
+        stopOnFocus: true,
+        style: {
+            background: "linear-gradient(to right, #4b33a8, #785ce9)",
+            borderRadius: "2rem",
+            textTransform: "uppercase",
+            fontSize: ".75rem",
+        },
+        offset: {
+            x: "1.5rem",
+            y: "1.5rem",
+        },
+        onClick: function () { },
+    }).showToast();
+
+    const idBoton = e.currentTarget.id;
+    const productoAgregado = productos.find(
+        (producto) => producto.id === parseInt(idBoton)
+    );
+
+    if (
+        productosEnCarrito.some((producto) => producto.id === parseInt(idBoton))
+    ) {
+        const index = productosEnCarrito.findIndex(
+            (producto) => producto.id === parseInt(idBoton)
+        );
+
+        productosEnCarrito[index].cantidad++;
+    } else {
+        productoAgregado.cantidad = 1;
+        productosEnCarrito.push(productoAgregado);
+    }
+
+    actualizarNumerito();
+
+    localStorage.setItem(
+        "productos-en-carrito",
+        JSON.stringify(productosEnCarrito)
+    );
+}
+
+botonesCategorias.forEach((boton) => {
+    boton.addEventListener("click", (e) => {
+        botonesCategorias.forEach((boton) => boton.classList.remove("active"));
+        e.currentTarget.classList.add("active");
+
+        if (e.currentTarget.id != "todos") {
+            const productoCategoria = productos.find(
+                (producto) => producto.categoria === e.currentTarget.id
+            );
+            tituloPrincipal.innerText = productoCategoria.categoria;
+            const productosBoton = productos.filter(
+                (producto) => producto.categoria === e.currentTarget.id
+            );
+            cargarProductos(productosBoton);
+        } else {
+            tituloPrincipal.innerText = "Todos los productos";
+            cargarProductos(productos);
+        }
+    });
+});
+
+function actualizarNumerito() {
+    let nuevoNumerito = productosEnCarrito.reduce(
+        (acc, producto) => acc + producto.cantidad,
+        0
+    );
+    numerito.innerText = nuevoNumerito;
+}
+
+function filtrarProductos() {
+    let productoBuscado = productos.filter((producto) =>
+           producto.nombre
+            .toLowerCase()
+            .includes(inputBuscar.value.toLowerCase().trim())
+            );
+            productoBuscado != [] && cargarProductos(productoBuscado);
+}
+//buscador letra por letra
+inputBuscar.addEventListener("keyup", filtrarProductos);
