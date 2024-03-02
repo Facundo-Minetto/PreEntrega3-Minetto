@@ -3,6 +3,7 @@ const tituloPrincipal = document.querySelector("#titulo-principal");
 const contenedorProductos = document.querySelector("#contenedor-productos");
 const numerito = document.querySelector("#numerito");
 const inputBuscar = document.querySelector("#buscar");
+const cambiarPrecio = document.getElementById('cambiarPrecio');
 let botonesAgregar = document.querySelectorAll(".producto-agregar");
 let productosEnCarrito;
 let productosEnCarritoLS = recuperar("productos-en-carrito");

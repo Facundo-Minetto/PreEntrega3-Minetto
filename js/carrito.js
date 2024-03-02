@@ -129,6 +129,7 @@ function vaciarCarrito() {
             cargarProductosCarrito();
         }
     });
+    let monedaActual = "ARS"
 }
 
 function actualizarTotal() {
@@ -162,3 +163,60 @@ function actualizarNumerito() {
     );
     numerito.innerText = nuevoNumerito;
   }
+  const getTasaDeCambio = () => {
+    return fetch("https://api.exchangerate.host/latest?base=ARS&symbols=USD")
+    .then(response => response.json())
+    .then(data => {
+        return data.rates.USD;
+})
+}
+
+const calcularTotalCompra = () => {
+    let total = 0
+    productosEnCarrito.forEach(async (producto) => {
+        //Obtengo el precio actual en pesos argentinos
+        let precioActual = producto.precio * producto.cantidad;
+        if (monedaActual === "USD") {
+            //Obtengo la tasa de cambio USD/ARS mediante una API
+
+                    //Obtengo la tasa de cambio USD/ARS
+                    let tasaCambio = await getTasaDeCambio();
+                    //Multiplico el precio en pesos por la tasa de cambio para obtener el precio en dolares
+                    precioActual = precioActual * tasaCambio;
+                    //Actualizo el total con el precio en dolares
+                    total += precioActual;
+                    //Actualizo el valor en la pagina con el simbolo de dolares
+                    if (carrito.length === 0) {
+                        totalCompra.innerHTML = "$ 0"
+                    } else {
+                        totalCompra.innerHTML = "US$ " + total.toFixed(2)
+                    }
+                ;
+        } else {
+            total += precioActual
+            if (productosEnCarrito.length === 0) {
+                totalCompra.innerHTML = "$ 0"
+            } else {
+                totalCompra.innerHTML = "$ " + total;
+            }
+        }
+    })
+    if (productosEnCarrito.length === 0) {
+        totalCompra.innerHTML = "$ 0"
+    }
+    else if (monedaActual === "USD") {
+        totalCompra.innerHTML = "US$ " + total.toFixed(2);
+    } else {
+        totalCompra.innerHTML = "$ " + total
+    }
+}
+
+
+cambiarPrecio.addEventListener('click', () => {
+    if (monedaActual === "ARS") {
+        monedaActual = "USD"
+    } else {
+        monedaActual = "ARS"
+    }
+    calcularTotalCompra()
+})
